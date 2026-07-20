@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Link } from '../components/Router';
 import LucideIcon from '../components/LucideIcon';
@@ -41,6 +42,341 @@ function NetworkBackground() {
         <circle cx="35%" cy="65%" r="2" fill="#00f0ff" />
         <circle cx="65%" cy="80%" r="3" fill="#a855f7" />
       </svg>
+    </div>
+  );
+}
+
+function HeroDashboardWidget() {
+  const [activeTab, setActiveTab] = useState<'network' | 'metrics' | 'security'>('network');
+  const [selectedNode, setSelectedNode] = useState<string>('fw');
+  const [shieldActive, setShieldActive] = useState<boolean>(true);
+  const [liveTraffic, setLiveTraffic] = useState<number>(42);
+
+  // Live simulation ticker for traffic metrics
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLiveTraffic(prev => {
+        const delta = Math.floor(Math.random() * 9) - 4; // -4 to +4
+        const nextVal = prev + delta;
+        return Math.max(25, Math.min(85, nextVal));
+      });
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const nodes = [
+    { id: 'gw', name: 'Tampa Edge GW', type: 'Gateway', x: 20, y: 30, ip: '192.168.1.1', status: 'Optimal', details: 'SLA-Grade Fiber Trunk', metrics: '4.2 Gbps Transit' },
+    { id: 'fw', name: 'Threat Firewall', type: 'Security', x: 50, y: 30, ip: '10.0.0.1', status: 'Secured', details: 'Next-Gen IPS Filtering', metrics: '0 Blocks/min' },
+    { id: 'vm', name: 'Primary Cloud Host', type: 'Server', x: 80, y: 30, ip: '10.0.10.5', status: 'Optimal', details: 'Auto-Scaling Docker VM', metrics: '12% CPU Load' },
+    { id: 'db', name: 'Replica Database', type: 'Database', x: 35, y: 65, ip: '10.0.20.2', status: 'Synced', details: 'Multi-AZ Database Primary', metrics: '2ms Query Latency' },
+    { id: 'vault', name: 'Encrypted Vault', type: 'Storage', x: 65, y: 65, ip: '10.0.40.9', status: 'Encrypted', details: 'Daily S3 Archive Cold Backup', metrics: '100% Integrity' },
+  ];
+
+  const nodeConnections = [
+    { from: 'gw', to: 'fw' },
+    { from: 'fw', to: 'vm' },
+    { from: 'vm', to: 'db' },
+    { from: 'vm', to: 'vault' },
+    { from: 'db', to: 'vault' },
+  ];
+
+  const activeNode = nodes.find(n => n.id === selectedNode) || nodes[1];
+
+  return (
+    <div className="relative w-full max-w-sm aspect-square border border-brand-border/60 bg-gradient-to-b from-brand-card/90 to-brand-card/50 backdrop-blur-xl rounded-2xl p-6 shadow-2xl flex flex-col justify-between overflow-hidden group min-h-[440px] text-white">
+      {/* Exquisite Top Ambient Line Glows */}
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-brand-primary/50 to-transparent" />
+      <div className="absolute -inset-1 border border-brand-primary/10 rounded-2xl pointer-events-none" />
+
+      {/* Grid background for technical aesthetics */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:16px_16px] rounded-2xl" />
+
+      {/* Header with Title and Premium Tabs */}
+      <div className="flex flex-col gap-4 border-b border-brand-border/30 pb-4 relative z-10">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-brand-primary animate-pulse shadow-[0_0_10px_rgba(0,240,255,0.7)]" />
+            <span className="font-mono text-[10px] tracking-widest text-brand-primary font-bold uppercase">
+              Operations Center
+            </span>
+          </div>
+          <div className="flex items-center gap-1 font-mono text-[9px] text-gray-400 bg-white/5 px-2 py-0.5 rounded border border-white/5">
+            <span className="w-1 h-1 rounded-full bg-green-500 animate-ping inline-block mr-1" />
+            <span>SLA: 100%</span>
+          </div>
+        </div>
+
+        {/* Tab Buttons */}
+        <div className="flex gap-1 bg-brand-card/80 p-0.5 rounded-lg border border-brand-border/40">
+          <button
+            onClick={() => setActiveTab('network')}
+            className={`flex-1 flex items-center justify-center gap-1 py-1 px-1.5 text-[9px] font-semibold rounded-md font-mono transition-all ${
+              activeTab === 'network'
+                ? 'bg-brand-primary/15 text-brand-primary border border-brand-primary/20 shadow-inner'
+                : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'
+            }`}
+          >
+            <LucideIcon name="Network" size={10} />
+            <span>MAP</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('metrics')}
+            className={`flex-1 flex items-center justify-center gap-1 py-1 px-1.5 text-[9px] font-semibold rounded-md font-mono transition-all ${
+              activeTab === 'metrics'
+                ? 'bg-brand-primary/15 text-brand-primary border border-brand-primary/20 shadow-inner'
+                : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'
+            }`}
+          >
+            <LucideIcon name="Activity" size={10} />
+            <span>METRICS</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('security')}
+            className={`flex-1 flex items-center justify-center gap-1 py-1 px-1.5 text-[9px] font-semibold rounded-md font-mono transition-all ${
+              activeTab === 'security'
+                ? 'bg-brand-primary/15 text-brand-primary border border-brand-primary/20 shadow-inner'
+                : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'
+            }`}
+          >
+            <LucideIcon name="ShieldCheck" size={10} />
+            <span>SHIELD</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Core Tab Display Area */}
+      <div className="flex-1 py-4 flex flex-col justify-center relative z-10 min-h-[220px]">
+        
+        {/* Tab 1: NETWORK MAP */}
+        {activeTab === 'network' && (
+          <div className="w-full h-full flex flex-col justify-between">
+            {/* SVG Network Map Topology */}
+            <div className="relative w-full h-32 bg-brand-card/20 rounded-xl border border-brand-border/30 overflow-hidden">
+              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 80" preserveAspectRatio="none">
+                {/* Connection lines */}
+                {nodeConnections.map((conn, idx) => {
+                  const fromNode = nodes.find(n => n.id === conn.from)!;
+                  const toNode = nodes.find(n => n.id === conn.to)!;
+                  const isHighlighted = selectedNode === conn.from || selectedNode === conn.to;
+                  return (
+                    <line
+                      key={idx}
+                      x1={fromNode.x}
+                      y1={fromNode.y}
+                      x2={toNode.x}
+                      y2={toNode.y}
+                      stroke={isHighlighted ? '#00f0ff' : 'rgba(255, 255, 255, 0.1)'}
+                      strokeWidth={isHighlighted ? '1.2' : '0.6'}
+                      strokeDasharray={isHighlighted ? '2 1' : 'none'}
+                      style={{ transition: 'stroke 0.3s, stroke-width 0.3s' }}
+                    />
+                  );
+                })}
+              </svg>
+
+              {/* Node interactive dots */}
+              {nodes.map(node => {
+                const isSelected = selectedNode === node.id;
+                return (
+                  <button
+                    key={node.id}
+                    onClick={() => setSelectedNode(node.id)}
+                    className="absolute group/node focus:outline-none -translate-x-1/2 -translate-y-1/2"
+                    style={{ left: `${node.x}%`, top: `${node.y}%` }}
+                  >
+                    {/* Glowing active circle outer ring */}
+                    <div
+                      className={`absolute -inset-2 rounded-full blur-sm transition-all duration-300 ${
+                        isSelected
+                          ? 'bg-brand-primary/40 scale-125 opacity-100'
+                          : 'bg-transparent scale-70 group-hover/node:bg-brand-primary/10 group-hover/node:scale-110 opacity-60'
+                      }`}
+                    />
+                    
+                    {/* Ring border */}
+                    <div
+                      className={`relative w-3.5 h-3.5 rounded-full border flex items-center justify-center transition-all duration-300 ${
+                        isSelected
+                          ? 'border-brand-primary bg-[#050117]'
+                          : 'border-white/25 bg-brand-card hover:border-brand-primary/60'
+                      }`}
+                    >
+                      {/* Innermost node dot */}
+                      <div
+                        className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                          isSelected
+                            ? 'bg-brand-primary animate-pulse'
+                            : 'bg-gray-500 group-hover/node:bg-brand-primary/80'
+                        }`}
+                      />
+                    </div>
+
+                    {/* Miniature floating tooltip label */}
+                    <div className="absolute top-4 left-1/2 -translate-x-1/2 whitespace-nowrap bg-[#0a0526]/90 border border-brand-border/40 rounded px-1.5 py-0.5 text-[7px] font-mono tracking-wide text-gray-300 pointer-events-none opacity-0 group-hover/node:opacity-100 transition-opacity">
+                      {node.name}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Selected Node Details Box */}
+            <div className="mt-2.5 p-2.5 bg-white/5 border border-white/5 rounded-xl flex items-center justify-between text-left">
+              <div className="flex flex-col gap-0.5 max-w-[65%]">
+                <div className="flex items-center gap-1">
+                  <span className="font-mono text-[7px] font-bold tracking-wider text-brand-primary bg-brand-primary/10 px-1 py-0.5 rounded uppercase">
+                    {activeNode.type}
+                  </span>
+                  <span className="font-mono text-[8px] text-gray-500 font-semibold">{activeNode.ip}</span>
+                </div>
+                <h4 className="font-sans font-bold text-[11px] text-white leading-tight mt-0.5">{activeNode.name}</h4>
+                <p className="text-[9px] text-gray-400 font-sans mt-0.5 line-clamp-1">{activeNode.details}</p>
+              </div>
+
+              <div className="text-right flex flex-col gap-0.5 min-w-[30%]">
+                <span className="font-mono text-[8px] text-brand-secondary font-bold tracking-wider uppercase">
+                  {activeNode.status}
+                </span>
+                <span className="font-mono text-[8px] text-white/90 font-semibold bg-white/5 px-1.5 py-0.5 rounded border border-white/5 inline-block text-center truncate">
+                  {activeNode.metrics}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 2: METRICS & PERFORMANCE */}
+        {activeTab === 'metrics' && (
+          <div className="w-full flex flex-col gap-3">
+            {/* Live Data Grid */}
+            <div className="grid grid-cols-3 gap-2">
+              {/* Metric 1 */}
+              <div className="bg-white/5 border border-brand-border/30 p-2 rounded-xl flex flex-col items-center justify-between min-h-[85px] relative overflow-hidden">
+                <span className="font-mono text-[7px] font-semibold text-gray-400 tracking-wider text-center">UPTIME SLA</span>
+                <div className="my-1 relative flex items-center justify-center">
+                  <span className="font-mono text-base font-bold text-brand-primary">100%</span>
+                </div>
+                <span className="font-mono text-[7px] text-green-400 font-bold tracking-wider">SECURE</span>
+              </div>
+
+              {/* Metric 2 */}
+              <div className="bg-white/5 border border-brand-border/30 p-2 rounded-xl flex flex-col items-center justify-between min-h-[85px] relative overflow-hidden">
+                <span className="font-mono text-[7px] font-semibold text-gray-400 tracking-wider text-center">LIVE LOAD</span>
+                <div className="my-1 relative flex items-center justify-center">
+                  <span className="font-mono text-base font-bold text-white">{liveTraffic}</span>
+                  <span className="font-mono text-[8px] text-gray-500 ml-0.5">Mb/s</span>
+                </div>
+                <span className="font-mono text-[7px] text-brand-primary font-bold tracking-wider animate-pulse">OPTIMIZED</span>
+              </div>
+
+              {/* Metric 3 */}
+              <div className="bg-white/5 border border-brand-border/30 p-2 rounded-xl flex flex-col items-center justify-between min-h-[85px] relative overflow-hidden">
+                <span className="font-mono text-[7px] font-semibold text-gray-400 tracking-wider text-center">RESPONSE</span>
+                <div className="my-1 relative flex items-center justify-center">
+                  <span className="font-mono text-base font-bold text-brand-secondary">&lt;15m</span>
+                </div>
+                <span className="font-mono text-[7px] text-brand-secondary font-bold tracking-wider">GUARANTEED</span>
+              </div>
+            </div>
+
+            {/* Performance line diagram (Simple beautifully animated SVG line) */}
+            <div className="p-2.5 bg-white/5 border border-brand-border/30 rounded-xl text-left">
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-mono text-[8px] text-gray-400 tracking-wider font-semibold">24-HOUR TRAFFIC STABILITY</span>
+                <span className="font-mono text-[8px] text-green-400 font-bold">100% JITTER-FREE</span>
+              </div>
+              <div className="w-full h-8 relative overflow-hidden mt-1 bg-[#0a0526]/50 rounded-lg border border-white/5 p-1">
+                <svg className="w-full h-full" viewBox="0 0 100 30" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#00f0ff" stopOpacity="0.25" />
+                      <stop offset="100%" stopColor="#00f0ff" stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+                  {/* Fill area */}
+                  <path
+                    d="M 0 30 L 0 14 Q 10 12 20 18 T 40 10 T 60 16 T 80 8 T 100 12 L 100 30 Z"
+                    fill="url(#areaGrad)"
+                  />
+                  {/* Glowing Stroke line */}
+                  <path
+                    d="M 0 14 Q 10 12 20 18 T 40 10 T 60 16 T 80 8 T 100 12"
+                    fill="none"
+                    stroke="#00f0ff"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 3: SECURITY SHIELD */}
+        {activeTab === 'security' && (
+          <div className="w-full h-full flex flex-col justify-between">
+            {/* Interactive Shield Vector Representation */}
+            <div className="relative w-full h-24 bg-brand-card/20 rounded-xl border border-brand-border/30 flex items-center justify-center overflow-hidden">
+              {/* Radial sonar wave when shield is active */}
+              {shieldActive && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="absolute w-20 h-20 rounded-full border border-brand-primary/30 animate-ping" style={{ animationDuration: '3s' }} />
+                  <div className="absolute w-12 h-12 rounded-full border border-brand-secondary/20 animate-ping" style={{ animationDuration: '4s' }} />
+                </div>
+              )}
+
+              {/* Central glowing Shield symbol */}
+              <div className="relative flex flex-col items-center z-10">
+                <div className={`p-3 rounded-full border transition-all duration-500 ${
+                  shieldActive
+                    ? 'bg-brand-primary/10 border-brand-primary text-brand-primary shadow-[0_0_20px_rgba(0,240,255,0.2)] scale-110'
+                    : 'bg-red-500/5 border-red-500/30 text-red-400 scale-95'
+                }`}>
+                  <LucideIcon name={shieldActive ? 'ShieldCheck' : 'AlertCircle'} size={24} className="transition-transform duration-500" />
+                </div>
+              </div>
+            </div>
+
+            {/* Control Panel Toggle */}
+            <div className="p-2.5 bg-[#0a0526]/60 border border-brand-border/30 rounded-xl flex items-center justify-between text-left mt-2.5">
+              <div className="flex flex-col gap-0.5">
+                <span className="font-mono text-[7px] font-bold tracking-wider text-gray-500 uppercase">THREAT GUARD STATUS</span>
+                <span className="font-sans font-bold text-[10px] text-white">
+                  {shieldActive ? 'FORTIFIED FIREWALL' : 'STANDBY AUDITING'}
+                </span>
+                <p className="text-[8px] text-gray-400 font-sans leading-relaxed">
+                  {shieldActive ? 'IP ban list enforced & TLS 1.3 mandated' : 'Continuous audit log only'}
+                </p>
+              </div>
+
+              {/* Toggle switch */}
+              <button
+                onClick={() => setShieldActive(!shieldActive)}
+                className={`w-9 h-5 rounded-full p-0.5 transition-colors focus:outline-none shrink-0 ${
+                  shieldActive ? 'bg-brand-primary' : 'bg-white/10'
+                }`}
+              >
+                <div className={`w-4 h-4 rounded-full bg-[#050117] border border-white/25 transition-transform shadow-md ${
+                  shieldActive ? 'translate-x-4' : 'translate-x-0'
+                }`} />
+              </button>
+            </div>
+          </div>
+        )}
+
+      </div>
+
+      {/* Decorative Interactive Footer */}
+      <div className="border-t border-brand-border/40 pt-3 flex items-center justify-between relative z-10">
+        <div className="flex items-center gap-1.5">
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-primary animate-ping" />
+          <span className="text-[8px] text-gray-400 font-mono tracking-wide uppercase">HIYA SYSTEMS</span>
+        </div>
+        <div className="text-[8px] text-brand-secondary font-mono font-bold uppercase tracking-wider flex items-center gap-1">
+          <LucideIcon name="ShieldCheck" size={8} />
+          <span>TAMPA DISTRICT HUB</span>
+        </div>
+      </div>
     </div>
   );
 }
@@ -93,89 +429,7 @@ export default function Home() {
 
           {/* Hero Decorative Visual Column (5 columns) */}
           <div className="lg:col-span-5 hidden lg:flex items-center justify-center relative">
-            {/* Visual server console layout representation */}
-            <div className="relative w-full max-w-sm aspect-square border border-brand-border/60 bg-gradient-to-b from-brand-card/70 to-brand-card/40 backdrop-blur-md rounded-2xl p-6 shadow-2xl flex flex-col justify-between overflow-hidden group">
-              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-brand-primary/60 to-transparent" />
-              <div className="absolute -inset-1 border border-brand-primary/15 rounded-2xl pointer-events-none" />
-              
-              {/* Retro scanline overlay */}
-              <div className="absolute inset-0 pointer-events-none rounded-2xl overflow-hidden opacity-5 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[size:100%_4px,6px_100%]" />
-
-              {/* Terminal line headers */}
-              <div className="flex items-center justify-between border-b border-brand-border/40 pb-4 relative z-10">
-                <div className="flex gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
-                </div>
-                <span className="font-mono text-[9px] tracking-widest text-gray-400 uppercase font-semibold">
-                  System Monitor // Active
-                </span>
-              </div>
-
-              {/* Console logs with custom state indicators */}
-              <div className="flex flex-col gap-3.5 font-mono text-[10.5px] py-4 text-left relative z-10">
-                {/* Item 1 */}
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-brand-primary/5 border border-brand-primary/10 hover:bg-brand-primary/10 hover:border-brand-primary/25 transition-all duration-300">
-                  <div className="flex items-center gap-2 text-brand-primary">
-                    <span className="text-brand-primary animate-pulse">›</span>
-                    <span>INSPECTING ARCHITECTURE</span>
-                  </div>
-                  <span className="text-[8px] px-1.5 py-0.5 rounded bg-brand-primary/20 text-brand-primary font-bold uppercase tracking-wider animate-pulse">Active</span>
-                </div>
-                
-                {/* Item 2 */}
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-brand-secondary/5 border border-brand-secondary/10 hover:bg-brand-secondary/10 hover:border-brand-secondary/25 transition-all duration-300">
-                  <div className="flex items-center gap-2 text-brand-secondary">
-                    <span className="text-brand-secondary">›</span>
-                    <span>MAPPING CLOUD SPACES</span>
-                  </div>
-                  <span className="text-[8px] px-1.5 py-0.5 rounded bg-brand-secondary/20 text-brand-secondary font-bold uppercase tracking-wider">Done</span>
-                </div>
-
-                {/* Item 3 */}
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-white/5 border border-brand-border/40 hover:bg-white/10 hover:border-brand-border/60 transition-all duration-300">
-                  <div className="flex items-center gap-2 text-gray-300">
-                    <span className="text-brand-primary/60">›</span>
-                    <span>SECURING DIRECTORIES</span>
-                  </div>
-                  <div className="flex items-center gap-1 text-[8px] px-1.5 py-0.5 rounded bg-white/10 text-gray-300">
-                    <LucideIcon name="Lock" size={10} className="text-brand-primary" />
-                    <span>SECURE</span>
-                  </div>
-                </div>
-
-                {/* Item 4 */}
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-white/5 border border-brand-border/40 hover:bg-white/10 hover:border-brand-border/60 transition-all duration-300">
-                  <div className="flex items-center gap-2 text-gray-300">
-                    <span className="text-brand-primary/60">›</span>
-                    <span>AUTOMATION TRIGGERS</span>
-                  </div>
-                  <span className="text-[8px] px-1.5 py-0.5 rounded bg-white/10 text-gray-400 font-semibold">WAITING</span>
-                </div>
-
-                {/* Item 5 */}
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-brand-primary/10 border border-brand-primary/30 shadow-[0_0_15px_rgba(0,240,255,0.05)]">
-                  <div className="flex items-center gap-2 text-brand-primary font-bold">
-                    <span className="text-brand-primary">›</span>
-                    <span>HIYA IT SOLUTIONS</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span className="text-[9px] text-brand-primary uppercase tracking-widest font-bold">READY</span>
-                    <span className="w-1.5 h-3 bg-brand-primary animate-pulse inline-block ml-0.5" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Console footers */}
-              <div className="border-t border-brand-border/40 pt-4 flex items-center justify-between relative z-10">
-                <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-brand-primary animate-ping" />
-                  <span className="text-[10px] text-gray-400 font-mono">TAMPA DISTRICT</span>
-                </div>
-                <span className="text-[10px] text-brand-secondary font-mono font-bold">EST_2023</span>
-              </div>
-            </div>
+            <HeroDashboardWidget />
           </div>
 
         </div>
